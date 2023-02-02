@@ -1,7 +1,7 @@
 {
   "name": "study-vanilla-ecommerce",
   "version": "0.1.0",
-  "description": "A study in building an ecommerce web app with vanilla JavaScript.",
+  "description": "A study in building an ecommerce web app using vanilla JavaScript.",
   "private": true,
   "type": "module",
   "license": "MIT",
