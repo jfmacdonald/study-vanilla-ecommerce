@@ -3,7 +3,7 @@ function photosHTML(photos) {
     return '<p> There are no photos at this time. Please try again later. Sorry! </p>'
   const photoHTML = (photo) => `
     <div class="photo">
-      <img alt="${photo.description}" src="${photo.url}"/>
+      <img alt="${photo.description}" src="${photo.url}" />
       <div>${photo.name}</div>
     </div>`
   return `
