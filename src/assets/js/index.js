@@ -1,3 +1,5 @@
+import '../css/index.css'
+
 function photosHTML(photos) {
   if (!Array.isArray(photos) || !photos.length)
     return '<p> There are no photos at this time. Please try again later. Sorry! </p>'
@@ -43,4 +45,4 @@ async function fetchAndRender(endpoint) {
   }
 }
 
-export { fetchAndRender }
+fetchAndRender('https://vanillajsacademy.com/api/photos.json')

@@ -1,0 +1,40 @@
+body {
+  margin: 0 auto;
+  max-width: 50em;
+  width: 88%;
+}
+
+/**
+ * Nav Menu
+ */
+
+.nav {
+  padding: 1em 0;
+}
+
+.nav a {
+  text-decoration: none;
+}
+
+.nav a:focus,
+.nav a:hover {
+  text-decoration: underline;
+}
+
+/**
+ * Footer
+ */
+
+footer {
+  border-top: 1px solid #e5e5e5;
+  margin-top: 5em;
+}
+
+/**
+ * Responsive images
+ */
+
+img {
+  height: auto;
+  max-width: 100%;
+}
