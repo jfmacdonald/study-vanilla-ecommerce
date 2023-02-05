@@ -1,12 +1,15 @@
 import '../css/index.css'
+import fetchAndRender from './modules/fetchAndRender'
 
 function photosHTML(photos) {
   if (!Array.isArray(photos) || !photos.length)
     return '<p> There are no photos at this time. Please try again later. Sorry! </p>'
   const photoHTML = (photo) => `
     <div class="photo">
-      <img alt="${photo.description}" src="${photo.url}" />
-      <div>${photo.name}</div>
+      <a href="./photo/?id=${encodeURIComponent(photo.id)}">
+        <img alt="${photo.description}" src="${photo.url}" />
+        <div>${photo.name}</div>
+      </a>
     </div>`
   return `
     <div id="photos">
@@ -15,7 +18,7 @@ function photosHTML(photos) {
   `
 }
 
-function mainHTML(photos) {
+function html(photos) {
   return `
   <h1>Sparrow Photography</h1>
   <p>
@@ -26,23 +29,4 @@ function mainHTML(photos) {
   `
 }
 
-/**
- * Fetch photos from endpoint and render HTML
- *
- * @param {string: url} endpoint
- * @returns
- */
-async function fetchAndRender(endpoint) {
-  const app = document.querySelector('#app')
-  if (!app) return
-  try {
-    const response = await fetch(endpoint)
-    if (!response.ok) throw response
-    const photos = await response.json()
-    app.innerHTML = mainHTML(photos)
-  } catch (error) {
-    console.warn(error)
-  }
-}
-
-fetchAndRender('https://vanillajsacademy.com/api/photos.json')
+fetchAndRender('https://vanillajsacademy.com/api/photos.json', html)
