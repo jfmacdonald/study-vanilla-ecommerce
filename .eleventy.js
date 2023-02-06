@@ -21,7 +21,7 @@ module.exports = function (eleventyConfig) {
       assetsInclude: ['**/*.xml', '**/*.txt'],
       build: {
         minify: false,
-        sourcemap: 'true',
+        sourcemap: false,
         manifest: true,
         // This puts CSS and JS in subfolders – remove if you want all of it to be in /assets instead
         rollupOptions: {
