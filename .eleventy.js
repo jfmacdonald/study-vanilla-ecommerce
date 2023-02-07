@@ -2,7 +2,14 @@ const EleventyVitePlugin = require('@11ty/eleventy-plugin-vite')
 
 module.exports = function (eleventyConfig) {
   eleventyConfig.setServerPassthroughCopyBehavior('copy')
+
+  // Layouts
+  eleventyConfig.addLayoutAlias('base', 'base.njk')
+
+  // Copy/pass-through files
   eleventyConfig.addPassthroughCopy('public')
+  eleventyConfig.addPassthroughCopy('src/css')
+  eleventyConfig.addPassthroughCopy('src/js')
 
   // Plugins
   eleventyConfig.addPlugin(EleventyVitePlugin, {
@@ -18,40 +25,31 @@ module.exports = function (eleventyConfig) {
         middlewareMode: true
       },
       appType: 'custom',
-      assetsInclude: ['**/*.xml', '**/*.txt'],
+      // assetsInclude: ['**/*.xml', '**/*.txt'],
       build: {
         minify: false,
         sourcemap: false,
-        manifest: true,
-        // This puts CSS and JS in subfolders – remove if you want all of it to be in /assets instead
-        rollupOptions: {
-          output: {
-            assetFileNames: 'assets/[name].[ext]',
-            chunkFileNames: 'assets/[name].js',
-            entryFileNames: 'assets/[name].js'
-          }
-        }
+        manifest: true
+        // // This puts CSS and JS in subfolders – remove if you want all of it to be in /assets instead
+        // rollupOptions: {
+        //   output: {
+        //     assetFileNames: 'assets/[name].[ext]',
+        //     chunkFileNames: 'assets/[name].js',
+        //     entryFileNames: 'assets/[name].js'
+        //   }
+        // }
       }
     }
   })
 
-  // Layouts
-  eleventyConfig.addLayoutAlias('base', 'base.njk')
-
-  // Copy/pass-through files
-  eleventyConfig.addPassthroughCopy('src/assets/css')
-  eleventyConfig.addPassthroughCopy('src/assets/js')
-
   return {
-    templateFormats: ['md', 'njk', 'html'],
+    templateFormats: ['njk', 'html'],
     htmlTemplateEngine: 'njk',
     passthroughFileCopy: true,
     dir: {
       input: 'src',
-      // better not use "public" as the name of the output folder (see above...)
       output: 'dist',
       includes: '_includes',
-      layouts: 'layouts',
       data: '_data'
     }
   }
