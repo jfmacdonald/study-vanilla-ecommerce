@@ -2,7 +2,7 @@
  * Fetch photos from endpoint and execute callback to render HTML
  *
  * @param {string: url} endpoint
- * @param {function: (photos) => HTML } callback
+ * @param {function: (photos) => string } callback
  * @returns
  */
 async function fetchAndRender(endpoint, callback) {
@@ -12,7 +12,7 @@ async function fetchAndRender(endpoint, callback) {
     const response = await fetch(endpoint)
     if (!response.ok) throw response
     const photos = await response.json()
-    app.innerHTML = callback(photos)
+    app.innerHTML = callback(photos).trim()
   } catch (error) {
     console.warn(error)
   }
