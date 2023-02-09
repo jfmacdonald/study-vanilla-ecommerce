@@ -29,15 +29,15 @@ module.exports = function (eleventyConfig) {
       build: {
         minify: false,
         sourcemap: false,
-        manifest: true
-        // // This puts CSS and JS in subfolders – remove if you want all of it to be in /assets instead
-        // rollupOptions: {
-        //   output: {
-        //     assetFileNames: 'assets/[name].[ext]',
-        //     chunkFileNames: 'assets/[name].js',
-        //     entryFileNames: 'assets/[name].js'
-        //   }
-        // }
+        manifest: true,
+        // This puts CSS and JS in subfolders – remove if you want all of it to be in /assets instead
+        rollupOptions: {
+          output: {
+            assetFileNames: 'assets/[name].[ext]',
+            chunkFileNames: 'assets/[name].js',
+            entryFileNames: 'assets/[name].js'
+          }
+        }
       }
     }
   })
