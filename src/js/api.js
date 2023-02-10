@@ -25,20 +25,11 @@ async function getPhotos() {
   return photos
 }
 
-function getUrlPhoto(photos) {
+function getQueryPhoto(photos) {
   const url = new URL(window.location.href)
   const id = url.searchParams.get('id')
   if (!id) return null
   return photos.find((foto) => id === foto.id)
 }
 
-function displayPrice(price) {
-  if (Number(price) > 0)
-    return new Intl.NumberFormat('en', {
-      style: 'currency',
-      currency: 'USD'
-    }).format(Number(price))
-  return ''
-}
-
-export { getPhotos, getUrlPhoto, displayPrice }
+export { getPhotos, getQueryPhoto }

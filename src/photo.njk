@@ -5,7 +5,8 @@ layout: base
 <div id="app">Loading...</div>
 <script type="module" crossorigin>
   import '@/css/photo.css'
-  import { getPhotos, getUrlPhoto, displayPrice } from '@/js/api.js'
+  import { getPhotos, getQueryPhoto } from '@/js/api'
+  import { getDisplayPrice } from '@/js/helpers'
 
   function template(photo) {
     if (!photo) return ''
@@ -14,7 +15,7 @@ layout: base
     <div class="photo-single__info">
       <header>
         <h1 class="photo-single__name">${photo.name}</h1>
-        <span class="photo-single__price">${displayPrice(photo.price)}</span>
+        <span class="photo-single__price">${getDisplayPrice(photo.price)}</span>
       </header>
       <p class="photo-single__description"> ${photo.description} </p>
     </div>`
@@ -38,7 +39,7 @@ layout: base
   const app = document.querySelector('#app')
   if (app)
     getPhotos().then((photos) => {
-      const photo = getUrlPhoto(photos)
+      const photo = getQueryPhoto(photos)
       app.innerHTML = photo ? template(photo) : notFound()
     })
   else console.warn('No div#app found.')
