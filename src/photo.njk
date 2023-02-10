@@ -4,20 +4,26 @@ layout: base
 
 <div id="app">Loading...</div>
 <script type="module" crossorigin>
-  import '@/css/photo.css'
+  import { render } from 'https://cdn.jsdelivr.net/npm/reefjs@12/dist/reef.es.min.js'
   import { getPhotos, getQueryPhoto } from '@/js/api'
   import { getDisplayPrice } from '@/js/helpers'
+  import '@/css/photo.css'
 
   function template(photo) {
     if (!photo) return ''
+
+    const price = getDisplayPrice(photo.price)
 
     const text = (photo) => `
     <div class="photo-single__info">
       <header>
         <h1 class="photo-single__name">${photo.name}</h1>
-        <span class="photo-single__price">${getDisplayPrice(photo.price)}</span>
+        <span class="photo-single__price">${price}</span>
       </header>
       <p class="photo-single__description"> ${photo.description} </p>
+      <p class="photo-single__addtocart">
+        <button data-addtocart="${photo.id}">Add to Cart (${price})
+      </p>
     </div>`
 
     const image = (photo) => `
@@ -40,7 +46,7 @@ layout: base
   if (app)
     getPhotos().then((photos) => {
       const photo = getQueryPhoto(photos)
-      app.innerHTML = photo ? template(photo) : notFound()
+      render(app, photo ? template(photo) : notFound())
     })
   else console.warn('No div#app found.')
 </script>
