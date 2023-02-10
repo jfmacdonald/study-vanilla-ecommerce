@@ -1,3 +1,5 @@
+const { fileURLToPath, URL } = require('node:url')
+const path = require('node:path')
 const EleventyVitePlugin = require('@11ty/eleventy-plugin-vite')
 
 module.exports = function (eleventyConfig) {
@@ -19,6 +21,12 @@ module.exports = function (eleventyConfig) {
     viteOptions: {
       publicDir: 'public',
       base: './',
+      resolve: {
+        alias: {
+          '@': path.join(__dirname, 'src')
+          // '@': fileURLToPath(new URL('./src', import.meta.url))
+        }
+      },
       clearScreen: false,
       server: {
         mode: 'development',
@@ -30,12 +38,11 @@ module.exports = function (eleventyConfig) {
         minify: false,
         sourcemap: false,
         manifest: true,
-        // This puts CSS and JS in subfolders – remove if you want all of it to be in /assets instead
         rollupOptions: {
           output: {
-            assetFileNames: 'assets/[name].[ext]',
-            chunkFileNames: 'assets/[name].js',
-            entryFileNames: 'assets/[name].js'
+            assetFileNames: 'assets/[name].[hash].[ext]',
+            chunkFileNames: 'assets/[name].[hash].js',
+            entryFileNames: 'assets/[name].[hash].js'
           }
         }
       }
