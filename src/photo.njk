@@ -5,25 +5,31 @@ layout: base
 <div id="app">Loading...</div>
 <script type="module" crossorigin>
   import { render } from 'https://cdn.jsdelivr.net/npm/reefjs@12/dist/reef.es.min.js'
-  import { getPhotos, getQueryPhoto } from '@/js/api'
+  import { getPhotos, getQueryPhoto, getPhotoById } from '@/js/api'
+  import { addToCart, isInCart, removeFromCart } from '@/js/cart'
   import { getDisplayPrice } from '@/js/helpers'
   import '@/css/photo.css'
 
+  const app = document.querySelector('#app')
+
   function template(photo) {
     if (!photo) return ''
-
     const price = getDisplayPrice(photo.price)
+    const cartButtonText = () =>
+      isInCart(photo.id) ? 'Remove from Cart' : 'Add to Cart'
 
     const text = (photo) => `
     <div class="photo-single__info">
-      <header>
+      <header class="photo-single__headline">
         <h1 class="photo-single__name">${photo.name}</h1>
         <span class="photo-single__price">${price}</span>
       </header>
       <p class="photo-single__description"> ${photo.description} </p>
-      <p class="photo-single__addtocart">
-        <button data-addtocart="${photo.id}">Add to Cart (${price})
-      </p>
+      <button id="cartBtn" class="photo-single__cart-action" data-cartaction="${
+        photo.id
+      }">
+        ${cartButtonText()}
+      </button>
     </div>`
 
     const image = (photo) => `
@@ -42,11 +48,24 @@ layout: base
   </div>`
   }
 
-  const app = document.querySelector('#app')
+  function handleCartAction(event) {
+    const id = event.target?.dataset.cartaction
+    if (!id) return
+    const photo = getPhotoById(id)
+    if (isInCart(id)) removeFromCart(id)
+    else addToCart(id)
+    render(app, template(photo))
+  }
+
+  function activateCart() {
+    document.addEventListener('click', handleCartAction)
+  }
+
   if (app)
     getPhotos().then((photos) => {
-      const photo = getQueryPhoto(photos)
+      const photo = getQueryPhoto()
       render(app, photo ? template(photo) : notFound())
+      if (photo) activateCart()
     })
   else console.warn('No div#app found.')
 </script>

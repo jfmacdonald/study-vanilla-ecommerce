@@ -13,6 +13,9 @@ module.exports = function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy('src/css')
   eleventyConfig.addPassthroughCopy('src/js')
 
+  eleventyConfig.addWatchTarget('./src/css/')
+  eleventyConfig.addWatchTarget('./src/js/')
+
   // Plugins
   eleventyConfig.addPlugin(EleventyVitePlugin, {
     tempFolderName: '.11ty-vite', // Default name of the temp folder

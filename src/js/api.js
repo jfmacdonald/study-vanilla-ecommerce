@@ -1,3 +1,5 @@
+let photos = getSavedPhotos()
+
 /**
  * Fetch photos from endpoint and return an array of photo objects
  *
@@ -14,7 +16,6 @@
  */
 async function getPhotos() {
   const endpoint = 'https://vanillajsacademy.com/api/photos.json'
-  let photos = getSavedPhotos()
   if (!photos) {
     try {
       const response = await fetch(endpoint)
@@ -31,13 +32,18 @@ async function getPhotos() {
 /**
  * Return one photo given URL query or null
  *
- * @param {*} photos
  * @returns {object} photo
  */
-function getQueryPhoto(photos) {
+function getQueryPhoto() {
+  if (!photos) return null
   const url = new URL(window.location.href)
   const id = url.searchParams.get('id')
   if (!id) return null
+  return photos.find((foto) => id === foto.id)
+}
+
+function getPhotoById(id) {
+  if (!photos) return null
   return photos.find((foto) => id === foto.id)
 }
 
@@ -56,7 +62,7 @@ function savePhotos(photos) {
  * @returns {array} photo[] | null
  */
 function getSavedPhotos() {
-  return JSON.parse(sessionStorage.getItem('photos'))
+  return JSON.parse(sessionStorage.getItem('photos')) || null
 }
 
-export { getPhotos, getQueryPhoto }
+export { getPhotos, getQueryPhoto, getPhotoById }

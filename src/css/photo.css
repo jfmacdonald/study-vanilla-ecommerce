@@ -1,1 +1,34 @@
 @import './main.css';
+
+.photo-single {
+  display: grid;
+  gap: 1rem;
+}
+
+.photo-single__headline {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+}
+
+h1.photo-single__name {
+  margin: 0;
+  font-weight: 600;
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.photo-single__image img {
+  border-radius: calc(2 * var(--rounding));
+}
+.photo-single__cart-action {
+  margin: 1.5rem 0;
+  width: 100%;
+}
+
+@media (min-width: 42rem) {
+  .photo-single {
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+  }
+}
