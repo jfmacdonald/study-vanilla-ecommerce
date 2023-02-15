@@ -1,0 +1,24 @@
+<header>
+  <nav class="nav">
+    <a class="logo" href="{{ '/' | url }}">
+      <strong>Sparrow Photography</strong>
+    </a>
+    <div id="nav-items"></div>
+  </nav>
+</header>
+<script type="module">
+  import { component } from '@/js/reactive'
+  import { getCartItems } from '@/js/cart'
+
+  function generator() {
+    const cartIcon = '&#x1f6d2;'
+    const items = getCartItems() || []
+    const count = items.length
+
+    return `<div class="cart">
+      <span class="cart-icon" aria-hidden="true">${cartIcon}<span> Cart <span class="cart-count">${count}</span>
+      </div>`
+  }
+
+  component('#nav-items', generator)
+</script>

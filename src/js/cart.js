@@ -1,5 +1,5 @@
-const cart = {}
-Object.assign(cart, JSON.parse(localStorage.getItem('cart')))
+import { watch } from '@/js/reactive'
+const cart = watch(Object.assign({}, JSON.parse(localStorage.getItem('cart'))))
 
 /**
  * Add item 'id' to cart
@@ -18,7 +18,6 @@ function addToCart(id) {
  */
 function removeFromCart(id) {
   delete cart[id]
-  localStorage.setItem('cart', JSON.stringify(cart))
   localStorage.setItem('cart', JSON.stringify(cart))
 }
 

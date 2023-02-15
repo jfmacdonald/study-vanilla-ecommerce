@@ -14,16 +14,8 @@
     />
   </head>
   <body>
-    <header>
-      <nav class="nav">
-        <a class="logo" href="{{ '/' | url }}">
-          <strong>Sparrow Photography</strong>
-        </a>
-      </nav>
-    </header>
+    {% include 'header.njk' %}
     <main>{{ content | safe }}</main>
-    <footer>
-      <p><em>Photos by Jack Sparrow. All rights reserved.</em></p>
-    </footer>
+    {% include 'footer.njk' %}
   </body>
 </html>

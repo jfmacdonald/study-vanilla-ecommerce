@@ -10,8 +10,8 @@ layout: base
 <div id="app">Loading...</div>
 
 <script type="module" crossorigin>
-  import { render } from 'https://cdn.jsdelivr.net/npm/reefjs@12/dist/reef.es.min.js'
   import { getPhotos } from '@/js/api'
+  import { component } from '@/js/reactive'
   import '@/css/home.css'
 
   function template(photos) {
@@ -27,10 +27,7 @@ layout: base
       </div>`
   }
 
-  const app = document.querySelector('#app')
-  if (app)
-    getPhotos().then((photos) => {
-      render(app, template(photos))
-    })
-  else console.warn('No div#app found.')
+  getPhotos().then((photos) => {
+    component('#app', () => template(photos))
+  })
 </script>

@@ -4,17 +4,17 @@ layout: base
 
 <div id="app">Loading...</div>
 <script type="module" crossorigin>
-  import { render } from 'https://cdn.jsdelivr.net/npm/reefjs@12/dist/reef.es.min.js'
   import { getPhotos, getQueryPhoto, getPhotoById } from '@/js/api'
   import { addToCart, isInCart, removeFromCart } from '@/js/cart'
-  import { getDisplayPrice } from '@/js/helpers'
+  import { getCurrencyString } from '@/js/helpers'
+  import { component, watch } from '@/js/reactive'
   import '@/css/photo.css'
 
   const app = document.querySelector('#app')
 
   function template(photo) {
     if (!photo) return ''
-    const price = getDisplayPrice(photo.price)
+    const price = getCurrencyString(photo.price)
     const cartButtonText = () =>
       isInCart(photo.id) ? 'Remove from Cart' : 'Add to Cart'
 
@@ -54,7 +54,6 @@ layout: base
     const photo = getPhotoById(id)
     if (isInCart(id)) removeFromCart(id)
     else addToCart(id)
-    render(app, template(photo))
   }
 
   function activateCart() {
@@ -64,8 +63,11 @@ layout: base
   if (app)
     getPhotos().then((photos) => {
       const photo = getQueryPhoto()
-      render(app, photo ? template(photo) : notFound())
-      if (photo) activateCart()
+      const generator = () => {
+        return photo ? template(photo) : notFound()
+      }
+      component(app, generator)
+      activateCart()
     })
   else console.warn('No div#app found.')
 </script>
