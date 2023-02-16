@@ -6,14 +6,22 @@
 .photo:hover img {
   box-shadow: var(--shadow-z4);
 }
+.photo:hover .photo__price {
+  text-decoration: none;
+}
 
-.photo > img.image {
+.photo__image {
   width: 100%;
   aspect-ratio: 1 / 1;
   object-fit: cover;
   border-radius: var(--rounding);
 }
-
+.photo__info {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  font-size: 0.875rem;
+}
 /**
  * Grid Layout
  */

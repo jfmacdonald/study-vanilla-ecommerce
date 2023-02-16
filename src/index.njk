@@ -7,27 +7,19 @@ layout: base
   High-end photography from the Seven Seas, brought to you by world-famous
   photographer Captain Jack Sparrow.
 </p>
-<div id="app">Loading...</div>
+<div id="photos">Loading...</div>
 
 <script type="module" crossorigin>
   import { getPhotos } from '@/js/api'
   import { component } from '@/js/reactive'
+  import { onePhoto } from '@/js/partials'
   import '@/css/home.css'
 
   function template(photos) {
-    const onePhoto = (photo) => `
-    <a class="photo" href="./photo/?id=${encodeURIComponent(photo.id)}">
-      <img class="image" alt="${photo.description}" src="${photo.url}" />
-      <div class="name">${photo.name}</div>
-    </a>`
-
-    return `
-      <div id="photos">
-        ${photos.map((photo) => onePhoto(photo)).join('\n')}
-      </div>`
+    return photos.map((photo) => onePhoto(photo)).join('\n')
   }
 
   getPhotos().then((photos) => {
-    component('#app', () => template(photos))
+    component('#photos', () => template(photos))
   })
 </script>

@@ -1,0 +1,91 @@
+---
+layout: base
+---
+
+<div class="checkout">
+  <h1>Shopping Cart</h1>
+  <div id="cart">Loading...</div>
+</div>
+<script type="module" crossorigin>
+  import { getPhotos, getPhotoById } from '@/js/api'
+  import { isInCart, removeFromCart } from '@/js/cart'
+  import { getCurrencyString } from '@/js/helpers'
+  import { component, watch } from '@/js/reactive'
+  import { onePhoto } from '@/js/partials'
+  import '@/css/checkout.css'
+
+  const item = (photo) => `
+    <div class="photo">
+      <img
+        class="photo__image"
+        src="${photo.url}"
+        alt="${photo.description}"
+        aria-describedby="name-${photo.id}"
+      />
+      <div class="photo__info">
+        <div class="photo__details">
+          <a href="./photo/?id=${encodeURIComponent(photo.id)}">
+            <h3 id="name-${photo.id}" class="photo__name">${photo.name}</h3>
+          </a>
+          <div class="photo__price">${getCurrencyString(photo.price)}</div>
+        </div>
+        <button class="text" data-remove="${photo.id}"> Remove </button>
+      </div>
+    </div>
+  `
+
+  const html = (photos) => {
+    const photosInCart = photos.filter((photo) => isInCart(photo.id))
+    const subtotal = photosInCart.reduce(
+      (accumulator, photo) => accumulator + photo.price,
+      0
+    )
+    const count = photosInCart.length
+    const shipping = count * 8
+    const tax = 0.075 * subtotal
+    const total = subtotal + shipping + tax
+    return `
+    <div class="shopping-cart">
+      <section class="items" aria-labelledby="items-heading" tabindex="-1">
+        <h2 id="items-heading" class="sr-only">${count} items in your cart</h2>
+        <ul class="items__list">
+          ${photosInCart.map((photo) => `<li> ${item(photo)} </li>`).join('\n')}
+        </ul>
+      </section>
+      <section class="summary">
+        <h2>Order summary</h2>
+        <dl>
+          <div class="entry">
+            <dt>Subtotal</dt><dd>${getCurrencyString(subtotal)}</dd>
+          </div>
+          <div class="entry">
+            <dt>Estimated shipping</dt><dd>${getCurrencyString(shipping)}</dd>
+          </div>
+          <div class="entry">
+            <dt>Estimated tax</dt><dd>${getCurrencyString(tax)}</dd>
+          </div>
+          <div class="entry">
+            <dt>Total</dt><dd>${getCurrencyString(total)}</dd>
+          </div>
+        </dl>
+      </section>
+    </div>
+    `
+  }
+
+  function handleRemoveFromCart(event) {
+    const id = event.target?.dataset.remove
+    console.log(`remove ${id}`)
+    if (!id) return
+    const photo = getPhotoById(id)
+    if (isInCart(id)) {
+      removeFromCart(id)
+      document.querySelector('#cart .items')?.focus()
+    }
+  }
+
+  getPhotos().then((photos) => {
+    component('#cart', () => html(photos))
+    document.addEventListener('click', handleRemoveFromCart)
+  })
+</script>

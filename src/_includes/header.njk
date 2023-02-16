@@ -15,9 +15,9 @@
     const items = getCartItems() || []
     const count = items.length
 
-    return `<div class="cart">
+    return `<a href="{{ '/checkout' | url }}" class="cart">
       <span class="cart-icon" aria-hidden="true">${cartIcon}<span> Cart <span class="cart-count">${count}</span>
-      </div>`
+      </a>`
   }
 
   component('#nav-items', generator)

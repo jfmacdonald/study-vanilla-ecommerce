@@ -1,3 +1,6 @@
+@import 'sanitize.css';
+@import 'sanitize.css/typography.css';
+
 :root {
   --screen-sm: 20rem;
   --screen-md: 32rem;
@@ -45,7 +48,6 @@
 
 html {
   background: var(--color-gray-01);
-  font-family: 'Roboto', sans-serif;
   font-weight: 400;
 }
 
@@ -55,6 +57,11 @@ body {
   max-width: 64em;
   padding: 0 var(--spacing);
   color: var(--color-gray-80);
+}
+
+h2:first-child,
+h3:first-child {
+  margin-top: 0;
 }
 
 a[href] {
@@ -74,13 +81,12 @@ button {
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 1.125em;
   line-height: 1;
   color: var(--color-white);
   background: var(--color-blue-60);
-  border-radius: calc(1.5 * var(--rounding));
+  border-radius: calc(6 * var(--rounding));
   border: none;
-  padding: 0.75rem 2rem;
+  padding: 0.75em 2em;
 }
 button:focus-visible {
   outline: var(--color-blue-40) 2px solid;
@@ -88,6 +94,18 @@ button:focus-visible {
 }
 button:hover {
   box-shadow: var(--shadow-z4);
+}
+button.text {
+  color: var(--color-blue-70);
+  background: transparent;
+  text-transform: uppercase;
+}
+button.text:focus,
+button.text:hover {
+  background: var(--color-blue-05);
+}
+button.text:hover {
+  box-shadow: var(--shadow-z1);
 }
 
 /**
@@ -117,6 +135,16 @@ footer {
 
 img {
   max-width: 100%;
+}
+
+.sr-only:not(:focus):not(:active) {
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
 }
 
 @media screen (min-width: 20rem) {
