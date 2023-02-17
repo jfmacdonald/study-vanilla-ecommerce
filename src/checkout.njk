@@ -29,7 +29,9 @@ layout: base
           </a>
           <div class="photo__price">${getCurrencyString(photo.price)}</div>
         </div>
-        <button class="text" data-remove="${photo.id}"> Remove </button>
+        <button class="text" data-remove="${photo.id}">
+          Remove <span class="sr-only">${photo.name}</span>
+        </button>
       </div>
     </div>
   `
