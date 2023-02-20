@@ -8,36 +8,49 @@ layout: base
 </div>
 <script type="module" crossorigin>
   import { getPhotos, getPhotoById } from '@/js/api'
-  import { isInCart, removeFromCart } from '@/js/cart'
+  import { isInCart, removeFromCart, emptyCart } from '@/js/cart'
   import { getCurrencyString } from '@/js/helpers'
   import { component, watch } from '@/js/reactive'
   import { onePhoto } from '@/js/partials'
   import '@/css/checkout.css'
 
-  const item = (photo) => `
+  let collection = []
+
+  const status = watch({
+    message: '',
+    waiting: false
+  })
+
+  const getPhotosInCart = () => collection.filter((photo) => isInCart(photo.id))
+
+  const itemHtml = (photo) => {
+    const encodedId = encodeURIComponent(photo.id)
+    return `
     <div class="photo">
       <img
-        class="photo__image"
-        src="${photo.url}"
-        alt="${photo.description}"
-        aria-describedby="name-${photo.id}"
+      class="photo__image"
+      src="${photo.url}"
+      alt="${photo.description}"
+      aria-describedby="name-${photo.id}"
       />
       <div class="photo__info">
         <div class="photo__details">
-          <a href="./photo/?id=${encodeURIComponent(photo.id)}">
+          <a href="{{ '/photo/?id=${encodedId}' | url }}">
             <h3 id="name-${photo.id}" class="photo__name">${photo.name}</h3>
           </a>
           <div class="photo__price">${getCurrencyString(photo.price)}</div>
         </div>
-        <button class="text" data-remove="${photo.id}">
+        <button class="text" data-remove="${photo.id}" ${
+      status.waiting ? 'disabled' : ''
+    }>
           Remove <span class="sr-only">${photo.name}</span>
         </button>
       </div>
-    </div>
-  `
+    </div>`
+  }
 
-  const html = (photos) => {
-    const photosInCart = photos.filter((photo) => isInCart(photo.id))
+  const html = () => {
+    const photosInCart = getPhotosInCart()
     const subtotal = photosInCart.reduce(
       (accumulator, photo) => accumulator + photo.price,
       0
@@ -51,10 +64,12 @@ layout: base
       <section class="items" aria-labelledby="items-heading" tabindex="-1">
         <h2 id="items-heading" class="sr-only">${count} items in your cart</h2>
         <ul class="items__list">
-          ${photosInCart.map((photo) => `<li> ${item(photo)} </li>`).join('\n')}
+          ${photosInCart
+            .map((photo) => `<li> ${itemHtml(photo)} </li>`)
+            .join('\n')}
         </ul>
       </section>
-      <section class="summary">
+      <section class="checkout">
         <h2>Order summary</h2>
         <dl>
           <div class="entry">
@@ -70,24 +85,94 @@ layout: base
             <dt>Total</dt><dd>${getCurrencyString(total)}</dd>
           </div>
         </dl>
+        <button data-checkout ${
+          count && !status.waiting ? '' : 'disabled'
+        }>Checkout</button>
+        <div class="status" aria-live="polite" ${
+          status.message && 'style="background: white"'
+        }>${status.message}</div>
       </section>
     </div>
     `
   }
 
+  async function checkout() {
+    status.waiting = true
+    status.message = 'Redirecting to checkout . . .'
+    const photosInCart = getPhotosInCart()
+    const requestPackage = {
+      method: 'POST',
+      headers: {
+        'Content-type': 'application/json'
+      },
+      body: JSON.stringify({
+        line_items: photosInCart.map((item) => ({
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: item.name,
+              description: item.description,
+              images: [item.url]
+            },
+            unit_amount: Math.round(100 * item.price)
+          },
+          quantity: 1
+        })),
+        success_url: window.location.origin + '/success',
+        cancel_url: window.location.origin + '/checkout'
+      })
+    }
+
+    try {
+      // Call the middleman API
+      const request = await fetch(
+        'https://sparrow-stripe.jfmacdonald.workers.dev/',
+        requestPackage
+      )
+
+      if (!request.ok) throw request
+
+      // Get the response and redirect
+      const response = await request.json()
+      console.dir(response)
+      emptyCart()
+      window.location.href = response.url
+    } catch (error) {
+      console.warn(error)
+      status.waiting = false
+    }
+  }
+
   function handleRemoveFromCart(event) {
     const id = event.target?.dataset.remove
-    console.log(`remove ${id}`)
     if (!id) return
-    const photo = getPhotoById(id)
     if (isInCart(id)) {
       removeFromCart(id)
+      const photo = getPhotoById(id)
+      status.message = `Photo ${getPhotoById(id).name} removed from cart.`
       document.querySelector('#cart .items')?.focus()
     }
   }
 
+  function handleCheckout(event) {
+    checkout()
+  }
+
   getPhotos().then((photos) => {
-    component('#cart', () => html(photos))
-    document.addEventListener('click', handleRemoveFromCart)
+    collection = photos
+    component('#cart', () => html())
+    const itemsSection = document.querySelector('#cart section.items')
+    if (itemsSection)
+      itemsSection.addEventListener('click', handleRemoveFromCart)
+    const checkoutSection = document.querySelector('#cart section.checkout')
+    if (checkoutSection)
+      checkoutSection.addEventListener('click', handleCheckout)
+    // clear status message whenever moving away from page
+    document.addEventListener('visibilitychange', (event) => {
+      if (document.visibilityState === 'hidden') {
+        status.message = ''
+        status.waiting = false
+      }
+    })
   })
 </script>

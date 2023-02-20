@@ -15,7 +15,8 @@ let photos = getSavedPhotos()
  * @returns photo[]
  */
 async function getPhotos() {
-  const endpoint = 'https://vanillajsacademy.com/api/photos.json'
+  // const endpoint = 'https://vanillajsacademy.com/api/photos.json'
+  const endpoint = 'https://sparrow-photos.jfmacdonald.workers.dev/'
   if (!photos) {
     try {
       const response = await fetch(endpoint)
@@ -42,9 +43,15 @@ function getQueryPhoto() {
   return photos.find((foto) => id === foto.id)
 }
 
+/**
+ * Given an id, return a photo object with that id or null if none
+ *
+ * @param {string} id
+ * @returns {object} photo
+ */
 function getPhotoById(id) {
   if (!photos) return null
-  return photos.find((foto) => id === foto.id)
+  return photos.find((foto) => id === foto.id) || null
 }
 
 /**
