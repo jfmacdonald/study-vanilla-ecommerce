@@ -88,11 +88,11 @@ button {
   border: none;
   padding: 0.75em 2em;
 }
-button:not([disabled]):focus-visible {
+button:focus-visible {
   outline: var(--color-blue-40) 2px solid;
   outline-offset: 1px;
 }
-button:not([disabled]):hover {
+button:not([aria-disabled='true']):hover {
   box-shadow: var(--shadow-z4);
 }
 button.text {
@@ -100,16 +100,16 @@ button.text {
   background: transparent;
   text-transform: uppercase;
 }
-button:not([disabled]).text:focus,
-button:not([disabled]).text:hover {
+button:not([aria-disabled='true']).text:focus,
+button:not([aria-disabled='true']).text:hover {
   background: var(--color-blue-05);
 }
-button:not([disabled]).text:hover {
+button:not([aria-disabled='true']).text:hover {
   box-shadow: var(--shadow-z1);
 }
 
-button[disabled] {
-  background: var(--color-gray-30);
+button[aria-disabled='true'] {
+  opacity: 0.6;
 }
 
 /**

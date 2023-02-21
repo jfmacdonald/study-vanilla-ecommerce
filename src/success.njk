@@ -10,7 +10,58 @@ layout: base
 <hr />
 <p>Checkout complete. Thank you for your purchase!</p>
 <hr />
+<section>
+  <h2>Your puchases</h2>
+  <div id="root"></div>
+</section>
 
 <script type="module">
-  import '@/css/main.css'
+  import { getPhotos } from '@/js/api'
+  import { component } from '@/js/reactive'
+  import { emptyCart, isInCart, getCartItems } from '@/js/cart'
+  import '@/css/success.css'
+
+  const purchases = []
+
+  const itemHtml = (photo) => {
+    const encodedId = encodeURIComponent(photo.id)
+    return `
+    <div class="photo">
+      <img
+      class="photo__image"
+      src="${photo.url}"
+      alt="${photo.description}"
+      aria-describedby="name-${photo.id}"
+      />
+      <div class="photo__info">
+        <div class="photo__details">
+          <h3 id="name-${photo.id}" class="photo__name">${photo.name}</h3>
+          <p>${photo.description}</p>
+        </div>
+      </div>
+    </div>`
+  }
+
+  const html = () => {
+    const count = purchases.length
+    return `
+      <section class="items" aria-labelledby="items-heading" tabindex="-1">
+        <h2 id="items-heading" class="sr-only">${count} items purchased</h2>
+        <ul class="items__list">
+          ${purchases
+            .map((photo) => `<li> ${itemHtml(photo)} </li>`)
+            .join('\n')}
+        </ul>
+      </section>
+    `
+  }
+
+  getPhotos().then((photos) => {
+    purchases.push(...photos.filter((photo) => isInCart(photo.id)))
+    console.dir(purchases)
+    component('#root', () => html())
+    setTimeout(() => {
+      emptyCart()
+    }, 0)
+  })
 </script>

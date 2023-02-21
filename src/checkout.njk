@@ -22,6 +22,8 @@ layout: base
   })
 
   const getPhotosInCart = () => collection.filter((photo) => isInCart(photo.id))
+  const disableWhenWaiting = () =>
+    status.waiting ? 'aria-disabled="true" tabindex="-1"' : ''
 
   const itemHtml = (photo) => {
     const encodedId = encodeURIComponent(photo.id)
@@ -40,9 +42,7 @@ layout: base
           </a>
           <div class="photo__price">${getCurrencyString(photo.price)}</div>
         </div>
-        <button class="text" data-remove="${photo.id}" ${
-      status.waiting ? 'disabled' : ''
-    }>
+        <button class="text" data-remove="${photo.id}" ${disableWhenWaiting()}>
           Remove <span class="sr-only">${photo.name}</span>
         </button>
       </div>
@@ -85,9 +85,7 @@ layout: base
             <dt>Total</dt><dd>${getCurrencyString(total)}</dd>
           </div>
         </dl>
-        <button data-checkout ${
-          count && !status.waiting ? '' : 'disabled'
-        }>Checkout</button>
+        <button data-checkout ${disableWhenWaiting()}>Checkout</button>
         <div class="status" aria-live="polite" ${
           status.message && 'style="background: white"'
         }>${status.message}</div>
@@ -134,8 +132,7 @@ layout: base
 
       // Get the response and redirect
       const response = await request.json()
-      console.dir(response)
-      emptyCart()
+      // console.dir(response)
       window.location.href = response.url
     } catch (error) {
       console.warn(error)
@@ -146,6 +143,7 @@ layout: base
   function handleRemoveFromCart(event) {
     const id = event.target?.dataset.remove
     if (!id) return
+    if (status.waiting) return
     if (isInCart(id)) {
       removeFromCart(id)
       const photo = getPhotoById(id)
@@ -155,6 +153,7 @@ layout: base
   }
 
   function handleCheckout(event) {
+    if (status.waiting) return
     checkout()
   }
 
