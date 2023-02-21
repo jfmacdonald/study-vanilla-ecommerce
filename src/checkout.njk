@@ -59,15 +59,14 @@ layout: base
     const shipping = count * 8
     const tax = 0.075 * subtotal
     const total = subtotal + shipping + tax
+    const items = photosInCart
+      .map((photo) => `<li> ${itemHtml(photo)} </li>`)
+      .join('\n')
     return `
     <div class="shopping-cart">
       <section class="items" aria-labelledby="items-heading" tabindex="-1">
         <h2 id="items-heading" class="sr-only">${count} items in your cart</h2>
-        <ul class="items__list">
-          ${photosInCart
-            .map((photo) => `<li> ${itemHtml(photo)} </li>`)
-            .join('\n')}
-        </ul>
+        <ul class="items__list"> ${items} </ul>
       </section>
       <section class="checkout">
         <h2>Order summary</h2>
