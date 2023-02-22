@@ -38,7 +38,7 @@ module.exports = function (eleventyConfig) {
       appType: 'custom',
       // assetsInclude: ['**/*.xml', '**/*.txt'],
       build: {
-        minify: false,
+        minify: true,
         sourcemap: false,
         manifest: true,
         rollupOptions: {
