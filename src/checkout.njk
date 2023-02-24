@@ -8,7 +8,7 @@ layout: base
 </div>
 <script type="module" crossorigin>
   import { getPhotos, getPhotoById } from '@/js/api'
-  import { isInCart, removeFromCart, emptyCart } from '@/js/cart'
+  import { isInCart, removeFromCart, emptyCart, getCartItems } from '@/js/cart'
   import { getCurrencyString } from '@/js/helpers'
   import { component, watch } from '@/js/reactive'
   import { onePhoto } from '@/js/partials'
@@ -56,8 +56,8 @@ layout: base
       0
     )
     const count = photosInCart.length
-    const shipping = count * 8
-    const tax = 0.075 * subtotal
+    const shipping = count * 0
+    const tax = 0 * subtotal
     const total = subtotal + shipping + tax
     const items = photosInCart
       .map((photo) => `<li> ${itemHtml(photo)} </li>`)
@@ -96,27 +96,15 @@ layout: base
   async function checkout() {
     status.waiting = true
     status.message = 'Redirecting to checkout . . .'
-    const photosInCart = getPhotosInCart()
     const requestPackage = {
       method: 'POST',
       headers: {
         'Content-type': 'application/json'
       },
       body: JSON.stringify({
-        line_items: photosInCart.map((item) => ({
-          price_data: {
-            currency: 'usd',
-            product_data: {
-              name: item.name,
-              description: item.description,
-              images: [item.url]
-            },
-            unit_amount: Math.round(100 * item.price)
-          },
-          quantity: 1
-        })),
-        success_url: window.location.origin + '/success',
-        cancel_url: window.location.origin + '/checkout'
+        cartIds: getCartItems(),
+        successUrl: window.location.origin + '/success',
+        cancelUrl: window.location.origin + '/checkout'
       })
     }
 

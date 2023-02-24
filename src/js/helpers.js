@@ -36,7 +36,7 @@ function getCurrencyString(value, currency = 'USD') {
       style: 'currency',
       currency
     }).format(Number(value))
-  return ''
+  return '0'
 }
 
 /**

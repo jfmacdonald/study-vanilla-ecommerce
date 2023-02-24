@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 /**
  * Create a PHP-style query string from an object
  * @param  {Object} data   The data to serialize into a string
@@ -44,6 +43,21 @@ async function handleRequest(request) {
     'Access-Control-Allow-Headers': '*'
   })
 
+  // allowed origins
+  const allowed = [
+    /https?:[/]{2}sparrow.test[/]?$/,
+    /https:[/]{2}sparrow[-\w]+\.jfmacdonald.workers.dev[/]?$/
+  ]
+
+  // If domain is not allowed, return error code
+  const origin = request.headers.get('origin')
+  if (!allowed.some((pattern) => String(origin).match(pattern))) {
+    return new Response(`Origin ${String(origin)} not allowed`, {
+      status: 403,
+      headers
+    })
+  }
+
   // Catch-all for non-POST request types
   if (request.method !== 'POST') {
     return new Response('ok', {
@@ -56,7 +70,23 @@ async function handleRequest(request) {
   try {
     // Get the request data
     const body = await request.json()
-    const { line_items, success_url, cancel_url } = body
+    const { cartIds, successUrl, cancelUrl } = body
+
+    const photos = await SPARROW_PHOTOS.get('photos', { type: 'json' })
+    const items = photos
+      .filter((photo) => cartIds.includes(photo.id))
+      .map((photo) => ({
+        price_data: {
+          currency: 'usd',
+          product_data: {
+            name: photo.name,
+            description: photo.description,
+            images: [photo.url]
+          },
+          unit_amount: Math.round(100 * photo.price)
+        },
+        quantity: 1
+      }))
 
     // Call the Stripe API
     const stripeRequest = await fetch(
@@ -70,9 +100,9 @@ async function handleRequest(request) {
         body: buildQuery({
           payment_method_types: ['card'],
           mode: 'payment',
-          line_items,
-          success_url,
-          cancel_url
+          line_items: items,
+          success_url: successUrl,
+          cancel_url: cancelUrl
         })
       }
     )
@@ -86,7 +116,11 @@ async function handleRequest(request) {
       headers
     })
   } catch (error) {
-    return new Response('Unable to reach API', {
+    let message = error
+    if (typeof error === 'object') message = error.message
+    if (typeof message !== 'string')
+      message = Object.prototype.toString.call(message).slice(8, -1)
+    return new Response(`Unable to reach API - ${message}`, {
       status: 500,
       headers
     })
