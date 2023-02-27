@@ -151,13 +151,13 @@ img {
   width: 1px;
 }
 
-@media screen (min-width: 20rem) {
+@media (min-width: 20rem) {
   body {
     padding: 0 calc(1.5 * var(--spacing));
   }
 }
 
-@media screen (min-width: 32rem) {
+@media (min-width: 32rem) {
   body {
     padding: 0 calc(2 * var(--spacing));
   }
