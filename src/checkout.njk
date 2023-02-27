@@ -8,8 +8,15 @@ layout: base
 </div>
 <script type="module" crossorigin>
   import { getPhotos, getPhotoById } from '@/js/api'
-  import { isInCart, removeFromCart, emptyCart, getCartItems } from '@/js/cart'
-  import { getCurrencyString } from '@/js/helpers'
+  import {
+    emptyCart,
+    getCartItems,
+    getUrlItems,
+    isInCart,
+    removeFromCart,
+    restoreCart
+  } from '@/js/cart'
+  import { clearUrlQuery, getCurrencyString } from '@/js/helpers'
   import { component, watch } from '@/js/reactive'
   import { onePhoto } from '@/js/partials'
   import '@/css/checkout.css'
@@ -50,6 +57,12 @@ layout: base
   }
 
   const html = () => {
+    // Restore cart when returning here after canceling purchase
+    const urlItems = getUrlItems()
+    if (urlItems.length) {
+      restoreCart(urlItems)
+      clearUrlQuery('items')
+    }
     const photosInCart = getPhotosInCart()
     const subtotal = photosInCart.reduce(
       (accumulator, photo) => accumulator + photo.price,
@@ -93,9 +106,26 @@ layout: base
     `
   }
 
+  function buildUrl(path, items) {
+    const url = new URL(window.location.origin + `/${path}`)
+    url.searchParams.set('items', items)
+    return url.href
+  }
+
+  function moveCartToUrl() {
+    const items = getCartItems()
+    emptyCart()
+    const url = new URL(window.location.href)
+    url.searchParams.set('items', items)
+    window.history.pushState(window.history.state, '', url.href)
+  }
+
   async function checkout() {
     status.waiting = true
     status.message = 'Redirecting to checkout . . .'
+    const cartItems = getCartItems()
+    const successUrl = buildUrl('success', cartItems)
+    const cancelUrl = buildUrl('checkout', cartItems)
     const requestPackage = {
       method: 'POST',
       headers: {
@@ -103,8 +133,8 @@ layout: base
       },
       body: JSON.stringify({
         cartIds: getCartItems(),
-        successUrl: window.location.origin + '/success',
-        cancelUrl: window.location.origin + '/checkout'
+        successUrl,
+        cancelUrl
       })
     }
 
@@ -117,10 +147,11 @@ layout: base
 
       if (!request.ok) throw request
 
-      // Get the response and redirect
+      // Get the response and deal with it
       const response = await request.json()
-      // console.dir(response)
-      window.location.href = response.url
+      // moveCartToUrl()
+      emptyCart()
+      window.location.assign(response.url)
     } catch (error) {
       console.warn(error)
       status.waiting = false
@@ -144,9 +175,13 @@ layout: base
     checkout()
   }
 
+  // Get photos and render page
   getPhotos().then((photos) => {
     collection = photos
+
+    // render page
     component('#cart', () => html())
+
     const itemsSection = document.querySelector('#cart section.items')
     if (itemsSection)
       itemsSection.addEventListener('click', handleRemoveFromCart)

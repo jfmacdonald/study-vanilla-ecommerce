@@ -29,6 +29,7 @@ function emptyCart() {
     delete cart[id]
   })
   localStorage.removeItem('cart')
+  console.log(`empty cart: ${Object.keys(cart).join(' ')}`)
 }
 
 /**
@@ -50,4 +51,23 @@ function isInCart(id) {
   return !!cart[id]
 }
 
-export { addToCart, removeFromCart, emptyCart, isInCart, getCartItems }
+function getUrlItems() {
+  const itemString = new URL(window.location.href).searchParams.get('items')
+  return itemString?.split(',') || []
+}
+
+function restoreCart(items) {
+  console.log(`Restoring cart ids: ${items.join(' ')}`)
+  emptyCart()
+  items.forEach((item) => addToCart(item))
+}
+
+export {
+  addToCart,
+  emptyCart,
+  getCartItems,
+  getUrlItems,
+  isInCart,
+  removeFromCart,
+  restoreCart
+}

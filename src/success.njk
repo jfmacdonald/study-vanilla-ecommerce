@@ -18,7 +18,8 @@ layout: base
 <script type="module">
   import { getPhotos } from '@/js/api'
   import { component } from '@/js/reactive'
-  import { emptyCart, isInCart, getCartItems } from '@/js/cart'
+  import { clearUrlQuery } from '@/js/helpers'
+  import { getUrlItems } from '@/js/cart'
   import '@/css/success.css'
 
   const purchases = []
@@ -57,11 +58,9 @@ layout: base
   }
 
   getPhotos().then((photos) => {
-    purchases.push(...photos.filter((photo) => isInCart(photo.id)))
-    console.dir(purchases)
+    const urlItems = getUrlItems()
+    purchases.push(...photos.filter((photo) => urlItems.includes(photo.id)))
+    clearUrlQuery('items')
     component('#root', () => html())
-    setTimeout(() => {
-      emptyCart()
-    }, 0)
   })
 </script>

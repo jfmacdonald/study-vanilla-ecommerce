@@ -1,3 +1,11 @@
+function clearUrlQuery(param) {
+  const url = new URL(window.location.href)
+  if (url.searchParams.has(param)) {
+    url.searchParams.delete(param)
+    window.history.replaceState(window.history.state, '', url.href)
+  }
+}
+
 /**
  * Emit a bubbling, cancelable custom event
  *
@@ -67,4 +75,34 @@ function getType(entity) {
   return Object.prototype.toString.call(entity).slice(8, -1)
 }
 
-export { emit, getCurrencyString, getElement, getType }
+/**
+ * Get array of an element’s descendants that can be reached with Tab key
+ *
+ * @param {HTMLElement} rootElement
+ * @returns HTMLElement[] | null
+ */
+function getDescendantTabStops(rootElement) {
+  if (!(rootElement instanceof HTMLElement)) return null
+  const selectors = [
+    'a[href]',
+    'area[href]',
+    'button:not([disabled])',
+    'input:not([disabled])',
+    'select:not([disabled])',
+    'textarea:not([disabled])',
+    '[tabindex="0"]'
+  ]
+    .map((selector) => `:scope ${selector}`)
+    .join(',')
+
+  return Array.from(rootElement.querySelectorAll(selectors).values())
+}
+
+export {
+  clearUrlQuery,
+  emit,
+  getCurrencyString,
+  getElement,
+  getType,
+  getDescendantTabStops
+}
