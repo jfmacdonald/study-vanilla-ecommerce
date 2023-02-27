@@ -58,11 +58,6 @@ layout: base
 
   const html = () => {
     console.log('Rendering...')
-    // Restore cart when returning here after canceling purchase
-    const urlItems = getUrlItems()
-    if (urlItems.length && !status.waiting) {
-      restoreCart(urlItems)
-    }
     const photosInCart = getPhotosInCart()
     const subtotal = photosInCart.reduce(
       (accumulator, photo) => accumulator + photo.price,
@@ -106,12 +101,19 @@ layout: base
     `
   }
 
+  /**
+   * Create URL for path with cart items added to query parameters
+   *
+   */
   function buildUrl(path, items) {
     const url = new URL(window.location.origin + `/${path}`)
     url.searchParams.set('items', items)
     return url.href
   }
 
+  /**
+   * Initiate Stripe checkout session
+   * */
   async function checkout() {
     status.waiting = true
     status.message = 'Redirecting to checkout . . .'
@@ -165,6 +167,12 @@ layout: base
   function handleCheckout(event) {
     if (status.waiting) return
     checkout()
+  }
+
+  // Restore cart if URL says so
+  const urlItems = getUrlItems()
+  if (urlItems.length && !status.waiting) {
+    restoreCart(urlItems)
   }
 
   // Get photos and render page

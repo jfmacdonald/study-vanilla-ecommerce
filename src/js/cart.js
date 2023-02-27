@@ -30,7 +30,7 @@ function emptyCart() {
     delete cart[id]
   })
   localStorage.removeItem('cart')
-  console.log(`empty cart: ${Object.keys(cart).join(' ')}`)
+  // console.log(`empty cart: ${Object.keys(cart).join(' ')}`)
 }
 
 /**
@@ -61,7 +61,10 @@ function restoreCart(items) {
   console.log(`Restoring cart ids: ${items.join(' ')}`)
   clearUrlQuery('items')
   emptyCart()
-  items.forEach((item) => addToCart(item))
+  items.forEach((item) => {
+    cart[item] = true
+  })
+  localStorage.setItem('cart', JSON.stringify(cart))
 }
 
 export {
