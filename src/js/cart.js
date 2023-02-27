@@ -1,4 +1,5 @@
 import { watch } from '@/js/reactive'
+import { clearUrlQuery } from '@/js/helpers'
 const cart = watch(Object.assign({}, JSON.parse(localStorage.getItem('cart'))))
 
 /**
@@ -58,6 +59,7 @@ function getUrlItems() {
 
 function restoreCart(items) {
   console.log(`Restoring cart ids: ${items.join(' ')}`)
+  clearUrlQuery('items')
   emptyCart()
   items.forEach((item) => addToCart(item))
 }
