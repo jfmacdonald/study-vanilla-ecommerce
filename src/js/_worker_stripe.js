@@ -46,7 +46,7 @@ async function handleRequest(request) {
   // allowed origins
   const allowed = [
     /https?:[/]{2}sparrow.test[/]?$/,
-    /https:[/]{2}sparrow[-\w]+\.jfmacdonald.workers.dev[/]?$/
+    /https:[/]{2}sparrow[-\w]+\.netlify.app[/]?$/
   ]
 
   // If domain is not allowed, return error code
