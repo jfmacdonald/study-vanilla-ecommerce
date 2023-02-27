@@ -115,6 +115,7 @@ layout: base
   function moveCartToUrl() {
     const items = getCartItems()
     emptyCart()
+
     const url = new URL(window.location.href)
     url.searchParams.set('items', items)
     window.history.pushState(window.history.state, '', url.href)
@@ -149,8 +150,8 @@ layout: base
 
       // Get the response and deal with it
       const response = await request.json()
-      // moveCartToUrl()
       emptyCart()
+      // history.pushState(history.state, undefined, cancelUrl)
       window.location.assign(response.url)
     } catch (error) {
       console.warn(error)
